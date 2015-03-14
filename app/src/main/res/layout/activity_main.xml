@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/main_activity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/toolbar" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:background="@drawable/toolbar_shadow"
+        />
+
+    <RelativeLayout
+        android:id="@+id/stuff"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:paddingBottom="@dimen/verticalMargin"
+        android:paddingLeft="@dimen/horizontalMargin"
+        android:paddingRight="@dimen/horizontalMargin"
+        android:paddingTop="@dimen/verticalMargin"
+        tools:context=".MainActivity">
+
+        <EditText
+            android:id="@+id/inputText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="@string/ui_inputHint"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:minLines="4"
+            android:textAlignment="center"
+            android:background="@null"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"
+            />
+
+        <ImageButton
+            android:id="@+id/button_translate"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/button_animation"
+            android:clickable="true"
+            android:hapticFeedbackEnabled="true"/>
+    </RelativeLayout>
+</RelativeLayout>

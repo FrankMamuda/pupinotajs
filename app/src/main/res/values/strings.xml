@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- applet name -->
+    <string name="app_name">Pupiņotājs</string>
+
+    <!-- Ui elements -->
+    <string name="ui_inputHint">Šeit ievadi tekstu, ko vēlies pārvērst Pupiņvalodā.\n\nKad gatavs, nospied uz Pupiņas un gaidi brīnumu.</string>
+    <string name="ui_emptyInputWarning">Ievadi takš tekstu!</string>
+
+    <!-- menu items -->
+    <string name="action_settings">Uzstādījumi</string>
+    <string name="action_clear">Notīrīt</string>
+    <string name="action_copy">Kopēt</string>
+</resources>

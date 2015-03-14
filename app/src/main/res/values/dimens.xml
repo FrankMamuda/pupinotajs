@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="horizontalMargin">16dp</dimen>
+    <dimen name="verticalMargin">16dp</dimen>
+    <dimen name="animationLeftMargin">8dp</dimen>
+    <dimen name="animationRightMargin">8dp</dimen>
+    <dimen name="animationTopMargin">8dp</dimen>
+    <dimen name="animationBottomMargin">8dp</dimen>
+</resources>

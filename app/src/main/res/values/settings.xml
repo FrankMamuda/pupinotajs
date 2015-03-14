@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- default values -->
+    <string name="settings_defaults_symbol">p</string>
+    <bool name="settings_defaults_keepMacrons">false</bool>
+    <bool name="settings_defaults_restore">false</bool>
+
+    <!-- settings keys -->
+    <string name="settings_key_keepMacrons">keepMacrons</string>
+    <string name="settings_key_symbol">defaultSymbol</string>
+    <string name="settings_key_restore">restore</string>
+    <string name="settings_key_lastEntry">lastEntry</string>
+
+    <!-- settings captions -->
+    <string name="settings_caption_keepMacrons">Garumzīme</string>
+    <string name="settings_caption_restore">Saglabāšana</string>
+    <string name="settings_caption_symbol">Pupiņburts</string>
+
+    <!-- settings descriptions -->
+    <string name="settings_desc_keepMacrons">Saglabāt garumzīmi pupiņzilbē</string>
+    <string name="settings_desc_symbol">Burts, ar kuru vēlies iesākt pupiņzilbi</string>
+    <string name="settings_desc_restore">Atcerēties pēdējo ierakstīto vārdu</string>
+</resources>

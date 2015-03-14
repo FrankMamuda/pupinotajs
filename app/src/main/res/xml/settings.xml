@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:defaultValue="@string/settings_defaults_symbol"
+        android:key="@string/settings_key_symbol"
+        android:summary="@string/settings_desc_symbol"
+        android:title="@string/settings_caption_symbol"/>
+
+    <CheckBoxPreference
+        android:defaultValue="@bool/settings_defaults_keepMacrons"
+        android:key="@string/settings_key_keepMacrons"
+        android:summary="@string/settings_desc_keepMacrons"
+        android:title="@string/settings_caption_keepMacrons">
+    </CheckBoxPreference>
+
+    <CheckBoxPreference
+        android:defaultValue="@bool/settings_defaults_restore"
+        android:key="@string/settings_key_restore"
+        android:summary="@string/settings_desc_restore"
+    android:title="@string/settings_caption_restore">
+    </CheckBoxPreference>
+    </PreferenceScreen>
