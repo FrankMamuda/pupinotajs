@@ -1,14 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- applet name -->
     <string name="app_name">Pupiņotājs</string>
-
-    <!-- Ui elements -->
-    <string name="ui_inputHint">Šeit ievadi tekstu, ko vēlies pārvērst Pupiņvalodā.\n\nKad gatavs, nospied uz Pupiņas un gaidi brīnumu.</string>
-    <string name="ui_emptyInputWarning">Ievadi takš tekstu!</string>
-
-    <!-- menu items -->
     <string name="action_settings">Uzstādījumi</string>
+    <string name="title_activity_settings">Uzstādījumi</string>
+    <string name="settings_defaults_symbol">p</string>
+    <bool name="settings_defaults_keepMacrons">false</bool>
+    <bool name="settings_defaults_restore">false</bool>
+
+    <!-- settings keys -->
+    <string name="settings_key_keepMacrons">keepMacrons</string>
+    <string name="settings_key_symbol">defaultSymbol</string>
+    <string name="settings_key_restore">restore</string>
+    <string name="settings_key_lastEntry">lastEntry</string>
+
+    <!-- settings captions -->
+    <string name="settings_caption_keepMacrons">Garumzīme</string>
+    <string name="settings_caption_restore">Saglabāšana</string>
+    <string name="settings_caption_symbol">Pupiņburts</string>
+
+    <!-- settings descriptions -->
+    <string name="settings_desc_keepMacrons">Saglabāt garumzīmi pupiņzilbē</string>
+    <string name="settings_desc_symbol">Burts, ar kuru vēlies iesākt pupiņzilbi</string>
+    <string name="settings_desc_restore">Atcerēties pēdējo ierakstīto vārdu</string>
+
     <string name="action_clear">Notīrīt</string>
     <string name="action_copy">Kopēt</string>
+
+    <string name="text_warning">Ievadi taču tekstu!</string>
+
 </resources>

@@ -1,36 +1,46 @@
 /*
-===========================================================================
-Copyright (C) 2014-2015 Factory #12
+ * Copyright (C) 2014-2018 Factory #12
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see http://www.gnu.org/licenses/.
-
-===========================================================================
-*/
-
-//
-// package (pupinotajs)
-//
 package org.factory12.pupinotajs;
+import android.util.Log;
+import android.util.SparseArray;
 
-//
-// class (Translator)
-//
-public class Translator {
-    //
-    // method (translate) - the actual translation algorithm
-    //
-    public static String translate( final String inputBuffer, final String symbol, boolean keepMacrons ) {
+class Translator {
+    // initialize vowel array
+    private static final SparseArray<Character> vowels = new SparseArray<>();
+    static {
+        Translator.vowels.put( 257, 'a' );
+        Translator.vowels.put( 275, 'e' );
+        Translator.vowels.put( 299, 'i' );
+        Translator.vowels.put( 363, 'u' );
+        Translator.vowels.put( 256, 'A' );
+        Translator.vowels.put( 274, 'E' );
+        Translator.vowels.put( 298, 'I' );
+        Translator.vowels.put( 362, 'U' );
+    }
+
+    /**
+     * @param inputBuffer
+     * @param symbol
+     * @param keepMacrons
+     * @return
+     */
+    static String translate( final String inputBuffer, final String symbol, boolean keepMacrons ) {
         int y;
         String msg;
 
@@ -49,7 +59,7 @@ public class Translator {
             ch = msg.charAt( y );
 
             // test if the char is a vowel
-            if ( Translator.isVowel( ch )) {
+            if ( Translator.isVowel( ch ) ) {
                 String vowelArray = "";
 
                 // strip macrons
@@ -81,62 +91,29 @@ public class Translator {
         return msg;
     }
 
-    //
-    // static method (isVowel) - tests if the given char is a vowel
-    //
+    /**
+     * tests if the given char is a vowel
+     * @param ch
+     * @return
+     */
     private static boolean isVowel( char ch ) {
         // special test for unicode entries: 257 aa, 275 ee, 299 ii, 363 uu, 256 AA, 274 EE, 298 II, 362 UU
-        if ( ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u' || ch == 'y' ||
-                ch == ( char ) 257 || ch == ( char ) 275 || ch == ( char ) 299 || ch == ( char ) 363 ||
-                ch == 'A' || ch == 'E' || ch == 'I' || ch == 'O' || ch == 'U' || ch == 'Y' ||
-                ch == ( char ) 256 || ch == ( char ) 274 || ch == ( char ) 298 || ch == ( char ) 362 ) {
-            return true;
-        }
-        return false;
+        return ( Translator.vowels.indexOfKey( ( int ) ch ) >= 0 || Translator.vowels.indexOfValue( ch ) >= 0 );
     }
 
-    //
-    // static method (stripMacron) - strips macrons for special chars
-    //
+    /**
+     * static method (stripMacron) - strips macrons for special chars
+     * @param ch
+     * @param keepMacrons
+     * @return
+     */
     private static char stripMacron( char ch, boolean keepMacrons ) {
-        // settings option - keepMacrons
-        if ( keepMacrons )
-            return ch;
 
+        Log.println( Log.DEBUG, "#########", "######### char " + ch + (int) ch );
         // determine appropriate char for conversion
-        switch ( ( int ) ch ) {
-            // aa
-            case 257:
-                return 'a';
+        if ( Translator.vowels.indexOfKey( ( int ) ch ) >= 0 && !keepMacrons )
+            return Translator.vowels.get( ( int ) ch );
 
-            // ee
-            case 275:
-                return 'e';
-
-            // ii
-            case 299:
-                return 'i';
-
-            // uu
-            case 363:
-                return 'u';
-
-            // AA
-            case 256:
-                return 'A';
-
-            // EE
-            case 274:
-                return 'E';
-
-            // II
-            case 298:
-                return 'I';
-
-            // UU
-            case 362:
-                return 'U';
-        }
         return ch;
     }
 }

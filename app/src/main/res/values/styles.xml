@@ -1,27 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="AppTheme.Base"/>
-
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
-        <item name="android:editTextStyle">@style/EditTextStyle</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="ToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:textColorPrimary">@color/textColorToolbar</item>
-        <item name="actionMenuTextColor">@color/textColorToolbar</item>
-        <item name="android:textColorSecondary">@color/textColorToolbar</item>
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="ToolbarPopupTheme" parent="@style/Widget.AppCompat.PopupMenu">
-        <item name="android:colorBackground">@color/colorPrimary</item>
-    </style>
-
-    <style name="EditTextStyle" parent="android:style/Widget.EditText">
-        <item name="android:textColor">@color/colorPrimaryDark</item>
-    </style>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

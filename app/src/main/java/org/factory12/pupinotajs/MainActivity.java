@@ -1,391 +1,293 @@
 /*
-===========================================================================
-Copyright (C) 2014-2015 Factory #12
+ * Copyright (C) 2014-2018 Factory #12
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ */
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see http://www.gnu.org/licenses/.
-
-===========================================================================
-*/
-
-//
-// package (pupinotajs)
-//
 package org.factory12.pupinotajs;
-
-//
-// imports
-//
-
-import android.annotation.SuppressLint;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.LayerDrawable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-//
-// class: MainActivity
-//
-public class MainActivity extends ActionBarActivity {
-    private ImageButton uiButtonTranslate;
-    private EditText uiTextInput;
-    private SoftKeyboardDetector softKeyboard;
-    private Settings settings;
+public class MainActivity extends AppCompatActivity {
+    private boolean m_converted = false;
+    private SharedPreferences preferences;
 
-    //
-    // property (clearMode)
-    //
-    private boolean propClearMode = false;
-
-    public boolean clearMode() {
-        return this.propClearMode;
+    private boolean isConverted() {
+        return this.m_converted;
     }
 
-    public void setClearMode( boolean value ) {
-        this.propClearMode = value;
+    private void setConverted( boolean converted ) {
+        this.m_converted = converted;
     }
 
-    //
-    // property (softKeyboardState)
-    //
-    static enum ViewModes {
-        Default,
-        TextInput,
-        ReadOnly/*,
-        Clear*/
+    private String m_text = "";
+
+    /**
+     *
+     */
+    private boolean isPreservingMacrons() {
+        return this.preferences.getBoolean( this.getResources().getString( R.string.settings_key_keepMacrons ), this.getResources().getBoolean( R.bool.settings_defaults_keepMacrons ) );
     }
 
-    private ViewModes propViewMode;
-
-    public final ViewModes viewMode() {
-        return this.propViewMode;
+    private boolean isPreservingText() {
+        return this.preferences.getBoolean( this.getResources().getString( R.string.settings_key_restore ), this.getResources().getBoolean( R.bool.settings_defaults_restore ) );
     }
 
-    private void setViewMode( ViewModes viewMode ) {
-        this.propViewMode = viewMode;
+    private String getText() {
+        return this.isPreservingText() ? this.preferences.getString( this.getResources().getString( R.string.settings_key_lastEntry ), "" ) : this.m_text;
     }
 
-    //
-    // property (softKeyboardState)
-    //
-    static enum SoftKeyboardStates {
-        Hidden,
-        Raised,
+    private void setText( String text ) {
+        if ( this.isPreservingText() ) {
+            final SharedPreferences.Editor editor;
+
+            editor = this.preferences.edit();
+            editor.putString( this.getResources().getString( R.string.settings_key_lastEntry ), text );
+            editor.commit();
+        }
+
+        this.m_text = text;
     }
 
-    private SoftKeyboardStates propSoftKeyboardState;
-
-    public final SoftKeyboardStates softKeyboardState() {
-        return this.propSoftKeyboardState;
+    private String symbol() {
+        return this.preferences.getString( this.getResources().getString( R.string.settings_key_symbol ), this.getResources().getString( R.string.settings_defaults_symbol ) );
     }
 
-    private void setSoftKeyboardState( SoftKeyboardStates state ) {
-        this.propSoftKeyboardState = state;
+    /**
+     *
+     */
+    @Override
+    protected void onPause() {
+        if ( this.isPreservingText() )
+            this.setText( this.m_text );
+
+        super.onPause();
     }
 
-    //
-    // property (originalString)
-    //
-    public String propOriginalString = "";
+    @Override
+    protected void onDestroy() {
+        if ( this.isPreservingText() )
+            this.setText( this.m_text );
 
-    public final String originalString() {
-        return this.propOriginalString;
+        super.onDestroy();
     }
 
-    public void setOriginalString( String originalString ) {
-        this.propOriginalString = originalString;
-    }
-
-    //
-    // overridden method (onCreate)
-    //
+    /**
+     * onCreate
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         final Toolbar toolbar;
-        final ActionBar actionBar;
-        RelativeLayout rootLayout;
+        final FloatingActionButton fab;
+        final EditText editText;
+        final InputMethodManager imm;
 
-        // set up ui
+        // get preferences
+        this.preferences = PreferenceManager.getDefaultSharedPreferences( this );
+
+        // restore instance and inflate activity
         super.onCreate( savedInstanceState );
         this.setContentView( R.layout.activity_main );
 
-        // set up the toolbar/actionbar
-        toolbar = ( Toolbar ) findViewById( R.id.toolbar );
+        // set up toolbar
+        toolbar = this.findViewById( R.id.toolbar );
         this.setSupportActionBar( toolbar );
-        actionBar = this.getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled( true );
-        actionBar.setIcon( R.drawable.app_icon );
 
-        // get the 'translate' button and connect 'setOnClickListener' to 'buttonPressed'
-        this.uiButtonTranslate = ( ImageButton ) this.findViewById( R.id.button_translate );
-        this.uiButtonTranslate.setOnClickListener( new View.OnClickListener() {
+        // get action button
+        fab = findViewById( R.id.fab );
+
+        // get keyboard
+        imm = ( ( InputMethodManager ) MainActivity.this.getSystemService( Context.INPUT_METHOD_SERVICE ) );
+        if ( imm == null )
+            return;
+
+        // get edit
+        editText = MainActivity.this.findViewById( R.id.editText );
+        if ( this.isPreservingText() )
+            editText.setText( this.getText() );
+
+        editText.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick( View view ) {
-                MainActivity.this.buttonPressed();
+                if ( MainActivity.this.isConverted() ) {
+                    fab.performClick();
+                    imm.toggleSoftInput( InputMethodManager.SHOW_FORCED, 0 );
+                }
+            }
+        } );
+        editText.setOnKeyListener( new View.OnKeyListener() {
+            @Override
+            public boolean onKey( View v, int keyCode, KeyEvent event ) {
+                if ( MainActivity.this.isConverted() ) {
+                    fab.performClick();
+                    imm.toggleSoftInput( InputMethodManager.SHOW_FORCED, 0 );
+                } else {
+                    MainActivity.this.m_text = editText.getText().toString();
+                }
+                return false;
             }
         } );
 
-        // initialize settings
-        this.settings = new Settings( this );
-
-        // get the 'input' EditText and override 'setOnClickListener'
-        this.uiTextInput = ( EditText ) findViewById( R.id.inputText );
-        this.uiTextInput.setTextColor( this.getResources().getColor( R.color.colorPrimary ) );
-        this.uiTextInput.setHintTextColor( this.getResources().getColor( R.color.colorPrimary ) );
-
-        // detect soft keyboard hide/show change
-        this.setSoftKeyboardState( SoftKeyboardStates.Hidden );
-        this.setViewMode( ViewModes.Default );
-        rootLayout = ( RelativeLayout ) findViewById( R.id.main_activity );
-        softKeyboard = new SoftKeyboardDetector( rootLayout, this.uiTextInput );
-        softKeyboard.setSoftKeyboardCallback( new SoftKeyboardDetector.SoftKeyboardChanged() {
+        // connect action button
+        fab.setOnClickListener( new View.OnClickListener() {
             @Override
-            public void onSoftKeyboardHide() {
-                // this code must be run on the Ui thread
-                MainActivity.this.runOnUiThread( new Runnable() {
-                    @Override
-                    public void run() {
-                        // reset button drawable
-                        MainActivity.this.setSoftKeyboardState( SoftKeyboardStates.Hidden );
-                        MainActivity.this.uiButtonTranslate.setBackgroundResource( R.drawable.button_animation );
+            public void onClick( View view ) {
+                int y;
+                final LayerDrawable drawable;
+                final ObjectAnimator animator;
+                final int green, red;
 
-                        // show hint
-                        MainActivity.this.uiTextInput.setHint( MainActivity.this.getString( R.string.ui_inputHint ) );
+                green = Color.parseColor( "#82a427" );
+                red = Color.parseColor( "#AA0000" );
+
+                animator = ObjectAnimator.ofInt( fab, "backgroundTint",
+                        MainActivity.this.isConverted() ? green : red,
+                        MainActivity.this.isConverted() ? red : green
+                );
+                animator.setDuration( 2000L );
+                animator.setEvaluator( new ArgbEvaluator() );
+                animator.setInterpolator( new DecelerateInterpolator( 2 ) );
+                animator.addUpdateListener( new ObjectAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate( ValueAnimator animation ) {
+                        int animatedValue = ( int ) animation.getAnimatedValue();
+                        fab.setBackgroundTintList( ColorStateList.valueOf( animatedValue ) );
                     }
                 } );
-            }
+                animator.start();
 
-            @Override
-            public void onSoftKeyboardShow() {
-                // this code must be run on the Ui thread
-                MainActivity.this.runOnUiThread( new Runnable() {
-                    @Override
-                    public void run() {
-                        // set view mode to 'TextInput' and display a semi-transparent button
-                        MainActivity.this.setSoftKeyboardState( SoftKeyboardStates.Raised );
-                        MainActivity.this.setViewMode( ViewModes.TextInput );
+                // check if anything has been written
+                if ( editText.length() <= 0 && !MainActivity.this.isConverted() ) {
+                    Snackbar.make( view, MainActivity.this.getResources().getText( R.string.text_warning ), Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
+                    MainActivity.this.setConverted( false );
+                    imm.toggleSoftInput( InputMethodManager.SHOW_FORCED, 0 );
+                    return;
+                }
 
-                        // make button semi-transparent only if soft keyboard is present
-                        /*if ( !MainActivity.this.hwKeyboard())*/
-                        MainActivity.this.uiButtonTranslate.setBackgroundResource( R.drawable.button_alpha50 );
+                // set converted text
+                if ( !MainActivity.this.isConverted() )
+                    MainActivity.this.setText( editText.getText().toString() );
 
-                        // hide hint
-                        MainActivity.this.uiTextInput.setHint( "" );
+                // set or reset converted text
+                editText.setText( MainActivity.this.isConverted() ? MainActivity.this.getText() : Translator.translate( MainActivity.this.getText(), MainActivity.this.symbol(), MainActivity.this.isPreservingMacrons() ) );
+
+                // hide keyboard if necessary
+                imm.hideSoftInputFromWindow( view.getWindowToken(), 0 );
+
+                // get action button drawable
+                fab.setImageDrawable( MainActivity.this.getDrawable( MainActivity.this.isConverted() ? R.drawable.icon_reversed : R.drawable.icon_animated ) );
+                drawable = ( LayerDrawable ) fab.getDrawable();
+                if ( drawable != null ) {
+                    if ( drawable.getNumberOfLayers() == 2 ) {
+                        for ( y = 0; y < 2; y++ ) {
+                            final Animatable anima;
+
+                            anima = ( Animatable ) drawable.getDrawable( y );
+                            if ( anima != null )
+                                anima.start();
+                        }
                     }
-                } );
+                }
+
+                // toggle state
+                MainActivity.this.setConverted( !MainActivity.this.isConverted() );
             }
         } );
-
-        // restore text if needed
-        if ( this.settings.restore() && this.settings.lastEntry().length() > 0 )
-            this.uiTextInput.setText( this.settings.lastEntry() );
     }
 
-    //
-    // overridden method (onDestroy)
-    //
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        this.softKeyboard.unRegisterSoftKeyboardCallback();
-    }
-
-    //
-    // method (hideSoftKeyboard)
-    //
-    private void hideSoftKeyboard() {
-        InputMethodManager imm;
-
-        // get and hide software keyboard
-        imm = ( InputMethodManager ) getSystemService( Context.INPUT_METHOD_SERVICE );
-        imm.hideSoftInputFromWindow( this.uiTextInput.getWindowToken(), 0 );
-    }
-
-    //
-    // method (buttonPressed) - performs Ui transitions with subsequent text conversion
-    //
-    private void buttonPressed() {
-        AnimationDrawable animation;
-        LayerDrawable button;
-
-        // clear mode
-        if ( this.clearMode() ) {
-            this.uiTextInput.setText( "" );
-            this.setOriginalString( "" );
-            this.uiTextInput.clearFocus();
-            this.uiTextInput.setHint( this.getString( R.string.ui_inputHint ) );
-        }
-
-        // copy text input string
-        if ( this.viewMode() != ViewModes.ReadOnly && !this.clearMode() )
-            this.setOriginalString( this.uiTextInput.getText().toString() );
-
-        // check whether input is empty
-        if ( this.originalString().length() == 0 && !this.clearMode() ) {
-            Toast.makeText( MainActivity.this, this.getString( R.string.ui_emptyInputWarning ), Toast.LENGTH_SHORT ).show();
-            return;
-        }
-
-        // hide soft keyboard
-        if ( this.softKeyboardState() == SoftKeyboardStates.Raised )
-            this.hideSoftKeyboard();
-
-        // handle view modes
-        if ( this.viewMode() == ViewModes.Default || this.viewMode() == ViewModes.TextInput ) {
-            String convertedText;
-
-            // set animation resource regardless of view state
-            this.uiButtonTranslate.setBackgroundResource( R.drawable.button_animation );
-
-            // abort on clear
-            if ( this.clearMode() ) {
-                this.setViewMode( ViewModes.Default );
-                this.setClearMode( false );
-                return;
-            }
-
-            // reset view mode
-            this.setViewMode( ViewModes.ReadOnly );
-
-            // hide cursor and disable hint
-            this.uiTextInput.setCursorVisible( false );
-            this.uiTextInput.setFocusableInTouchMode( false );
-            this.uiTextInput.setEnabled( false );
-
-            // convert the text
-            convertedText = Translator.translate( this.originalString(), this.settings.symbol(), this.settings.keepMacrons() );
-            this.uiTextInput.setText( convertedText );
-
-            // store last entry if needed
-            if ( this.settings.restore())
-                this.settings.setLastEntry( this.originalString() );
-            else
-                this.settings.setLastEntry( "" );
-        } else if ( this.viewMode() == ViewModes.ReadOnly ) {
-            // set backwards animation
-            this.uiButtonTranslate.setBackgroundResource( R.drawable.button_animation_backwards );
-            this.setViewMode( ViewModes.Default );
-
-            // restore cursor and hint
-            this.uiTextInput.setCursorVisible( true );
-            this.uiTextInput.setFocusableInTouchMode( true );
-            this.uiTextInput.setEnabled( true );
-
-            // restore previous text
-            this.uiTextInput.setText( this.originalString() );
-        }
-
-        // perform button animations
-        button = ( LayerDrawable ) this.uiButtonTranslate.getBackground();
-        animation = ( AnimationDrawable ) button.getDrawable( 1 );
-        animation.start();
-
-        // all done
-        this.setClearMode( false );
-    }
-
-    //
-    // overridden method (onCreateOptionsMenu)
-    //
+    /**
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
-        // inflate the menu
+        // inflate menu
         this.getMenuInflater().inflate( R.menu.menu_main, menu );
         return true;
     }
 
-    //
-    // overridden method (onOptionsItemSelected) - handles toolbar/actionbar events
-    //
+    /**
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-        int id;
+        final int id;
+        final FloatingActionButton fab;
 
-        // handle menu actions
         id = item.getItemId();
-        if ( id == R.id.actionSettings ) {
-            this.startActivity( new Intent( this, SettingsActivity.class ) );
-        } else if ( id == R.id.actionCopy ) {
-            // store translateBuffer into clipboard
-            this.copyToClipBoard();
-        } else if ( id == R.id.actionClear ) {
-            // TODO: so this does not work (on all view modes at least)
-            this.setClearMode( true );
-            this.buttonPressed();
+        fab = findViewById( R.id.fab );
+
+        if ( id == R.id.action_settings ) {
+            Intent settingsActivity;
+
+            if ( this.isConverted() )
+                fab.performClick();
+
+            settingsActivity = new Intent( MainActivity.this, SettingsActivity.class );
+            this.startActivity( settingsActivity );
+            return true;
+        } else if ( id == R.id.action_copy ) {
+            final ClipboardManager clipboard;
+            final ClipData clip;
+            final String convertedString;
+
+            convertedString = Translator.translate( this.getText(), this.symbol(), this.isPreservingMacrons() );
+            if ( convertedString.length() > 0 ) {
+                clipboard = ( ClipboardManager ) this.getSystemService( Context.CLIPBOARD_SERVICE );
+                clip = ClipData.newPlainText( "Pupinotajs text", convertedString );
+                if ( clipboard != null )
+                    clipboard.setPrimaryClip( clip );
+            }
+        } else if ( id == R.id.action_clear ) {
+            final EditText editText;
+
+            // reset button and state
+            if ( this.isConverted() )
+                fab.performClick();
+
+            // clear text if any
+            editText = MainActivity.this.findViewById( R.id.editText );
+            editText.setText( "" );
         }
 
         return super.onOptionsItemSelected( item );
-    }
-
-    //
-    // method (copyToClipBoard) - stores converted text into the clipboard
-    //
-    @SuppressWarnings("deprecation")
-    @SuppressLint("NewApi")
-    public void copyToClipBoard() {
-        String convertedString;
-
-        // get the converted string
-        convertedString = Translator.translate( this.originalString(), this.settings.symbol(), this.settings.keepMacrons() );
-        if ( convertedString.length() > 0 ) {
-            // handle legacy clipboard (if we ever plan to support API < 14)
-            if ( MainActivity.sdk() < android.os.Build.VERSION_CODES.HONEYCOMB ) {
-                android.text.ClipboardManager clipboard;
-
-                // get the clipboardManager and store the string
-                clipboard = ( android.text.ClipboardManager ) getSystemService( Context.CLIPBOARD_SERVICE );
-                clipboard.setText( convertedString );
-            } else {
-                android.content.ClipboardManager clipboard;
-                android.content.ClipData clip;
-
-                // get the clipboardManager and store the string
-                clipboard = ( android.content.ClipboardManager ) getSystemService( Context.CLIPBOARD_SERVICE );
-                clip = android.content.ClipData.newPlainText( "WordKeeper", convertedString );
-                clipboard.setPrimaryClip( clip );
-            }
-        }
-    }
-
-    //
-    // overridden method (onResume)
-    //
-    @Override
-    protected void onResume () {
-        // execute overridden method
-        super.onResume();
-
-        // reload settings
-        if ( this.settings != null )
-            this.settings.load();
-    }
-
-    //
-    // static method (sdk) - returns android API version
-    //
-    public static int sdk() {
-        return android.os.Build.VERSION.SDK_INT;
     }
 }

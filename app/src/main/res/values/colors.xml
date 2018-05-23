@@ -2,5 +2,5 @@
 <resources>
     <color name="colorPrimary">#a4c639</color>
     <color name="colorPrimaryDark">#82a427</color>
-    <color name="textColorToolbar">#ffffff</color>
+    <color name="colorAccent">#AA0000</color>
 </resources>

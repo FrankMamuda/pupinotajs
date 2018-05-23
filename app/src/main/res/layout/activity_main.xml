@@ -1,63 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/main_activity"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="org.factory12.pupinotajs.MainActivity">
+
+<android.support.design.widget.AppBarLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:theme="@style/AppTheme.AppBarOverlay">
 
-    <include layout="@layout/toolbar" />
-
-    <ImageView
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar"
-        android:background="@drawable/toolbar_shadow"
-        />
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <RelativeLayout
-        android:id="@+id/stuff"
+</android.support.design.widget.AppBarLayout>
+
+<include layout="@layout/content_main" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
-        android:paddingBottom="@dimen/verticalMargin"
-        android:paddingLeft="@dimen/horizontalMargin"
-        android:paddingRight="@dimen/horizontalMargin"
-        android:paddingTop="@dimen/verticalMargin"
-        tools:context=".MainActivity">
+        app:layout_behavior="" />
 
-        <EditText
-            android:id="@+id/inputText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/ui_inputHint"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:minLines="4"
-            android:textAlignment="center"
-            android:background="@null"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"
-            />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:scaleType="center"
+        android:layout_margin="@dimen/fab_margin"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/icon_animated" />
 
-        <ImageButton
-            android:id="@+id/button_translate"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="20dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/button_animation"
-            android:clickable="true"
-            android:hapticFeedbackEnabled="true"/>
-    </RelativeLayout>
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

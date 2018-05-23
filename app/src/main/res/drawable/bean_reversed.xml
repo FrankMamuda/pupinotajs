@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/bean">
+    <target
+        android:name="fab_bean_whole"
+        android:animation="@animator/fade_in" />
+    <target
+        android:name="fab_bean"
+        android:animation="@animator/rotate_reversed" />
+</animated-vector>
