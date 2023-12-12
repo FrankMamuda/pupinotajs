@@ -1,5 +1,6 @@
 package com.example.pupinotajs
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -11,6 +12,7 @@ import android.view.MenuItem
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
@@ -70,6 +72,8 @@ class MainActivity : AppCompatActivity() {
         // binding.fab.setImageDrawable(TransitionDrawable(backgrounds))
         this.binding.fab.setOnClickListener {
             this.animateFab()
+            val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
         }
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
