@@ -14,6 +14,8 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            android:background="#96a800"
+            app:titleTextColor="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
 
@@ -28,6 +30,11 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:theme="@style/Theme.MaterialComponents"
+        app:backgroundTint="#a50001"
+        app:tint="@null"
+        app:maxImageSize="56dp"
+        app:borderWidth="0dp"
+        android:importantForAccessibility="no" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
