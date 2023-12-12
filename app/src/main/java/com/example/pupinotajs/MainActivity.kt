@@ -9,25 +9,24 @@ import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View.OnFocusChangeListener
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.pupinotajs.databinding.ActivityMainBinding
 
+
 class MainActivity : AppCompatActivity() {
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private var animClockwise: Animation? = null
     private var animCounterClockwise: Animation? = null
     private var isOpen = false
     private var transitionDrawable: TransitionDrawable? = null
+    private var editText: EditText? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,13 +40,18 @@ class MainActivity : AppCompatActivity() {
         this.window.statusBarColor = ContextCompat.getColor(this, R.color.bean)
         this.setSupportActionBar(this.binding.toolbar)
 
-        val navController = this.findNavController(R.id.nav_host_fragment_content_main)
-        this.appBarConfiguration = AppBarConfiguration(navController.graph)
-        this.setupActionBarWithNavController(navController, this.appBarConfiguration)
-
         // setup animations
         this.animClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_cw)
         this.animCounterClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_ccw)
+
+       // binding.
+        this.editText = this.binding.editText
+        /*this.editText!!.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
+            if (this.isOpen) {
+                this.binding.fab.startAnimation(this.animClockwise)
+                this.transitionDrawable?.reverseTransition(1000)
+            }
+        }*/
 
         // UGLY but unfortunately TransitionDrawable does not work with vector drawables
         val makeBitmapDrawable =  fun (drawableId: Int): Drawable {
@@ -90,12 +94,6 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
     }
 
     private fun animateFab() {
