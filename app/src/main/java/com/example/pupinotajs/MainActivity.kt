@@ -1,6 +1,5 @@
 package com.example.pupinotajs
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -9,6 +8,7 @@ import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
@@ -19,60 +19,59 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.pupinotajs.databinding.ActivityMainBinding
 
-
 class MainActivity : AppCompatActivity() {
-
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private var rotCW: Animation? = null
-    private var rotCCW: Animation? = null
+    private var animClockwise: Animation? = null
+    private var animCounterClockwise: Animation? = null
     private var isOpen = false
     private var transitionDrawable: TransitionDrawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        // populate content
+        this.binding = ActivityMainBinding.inflate(this.layoutInflater)
+        this.setContentView(this.binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        // set up status bar
+        this.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        this.window.statusBarColor = ContextCompat.getColor(this, R.color.bean)
+        this.setSupportActionBar(this.binding.toolbar)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        val navController = this.findNavController(R.id.nav_host_fragment_content_main)
+        this.appBarConfiguration = AppBarConfiguration(navController.graph)
+        this.setupActionBarWithNavController(navController, this.appBarConfiguration)
 
-        rotCW = AnimationUtils.loadAnimation(this, R.anim.rotate_cw)
-        rotCCW = AnimationUtils.loadAnimation(this, R.anim.rotate_ccw)
+        // setup animations
+        this.animClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_cw)
+        this.animCounterClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_ccw)
 
-        transitionDrawable = TransitionDrawable(arrayOf<Drawable>(
-            getDrawableFromVectorDrawable(this, R.drawable.bean_plain),
-            getDrawableFromVectorDrawable(this, R.drawable.bean_lv)))
-        transitionDrawable!!.isCrossFadeEnabled = true
+        // UGLY but unfortunately TransitionDrawable does not work with vector drawables
+        val makeBitmapDrawable =  fun (drawableId: Int): Drawable {
+            val drawable = ContextCompat.getDrawable(this, drawableId)
+            val bitmap = Bitmap.createBitmap(
+                drawable!!.intrinsicWidth,
+                drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            return BitmapDrawable(this.resources, bitmap)
+        }
+        this.transitionDrawable = TransitionDrawable(arrayOf(
+            makeBitmapDrawable(R.drawable.bean_plain),
+            makeBitmapDrawable(R.drawable.bean_lv)))
+        this.transitionDrawable!!.isCrossFadeEnabled = true
 
-        binding.fab.setImageDrawable(transitionDrawable)
+        // set this animated image for the action button
+        this.binding.fab.setImageDrawable(transitionDrawable)
 
         // binding.fab.setImageDrawable(TransitionDrawable(backgrounds))
-        binding.fab.setOnClickListener {
-            animateFab()
+        this.binding.fab.setOnClickListener {
+            this.animateFab()
         }
     }
-
-    private fun getDrawableFromVectorDrawable(context: Context, drawableId: Int): Drawable {
-        return BitmapDrawable(context.resources, getBitmapFromVectorDrawable(context, drawableId))
-    }
-
-    private fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap {
-        val drawable = ContextCompat.getDrawable(context!!, drawableId)
-        val bitmap = Bitmap.createBitmap(
-            drawable!!.intrinsicWidth,
-            drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -96,13 +95,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun animateFab() {
-        if (isOpen) {
-            binding.fab.startAnimation(rotCW)
-            transitionDrawable?.reverseTransition(1000)
+        if (this.isOpen) {
+            this.binding.fab.startAnimation(this.animClockwise)
+            this.transitionDrawable?.reverseTransition(1000)
         } else {
-            binding.fab.startAnimation(rotCCW)
-            transitionDrawable?.startTransition(1000)
+            this.binding.fab.startAnimation(this.animCounterClockwise)
+            this.transitionDrawable?.startTransition(1000)
         }
-        isOpen = !isOpen
+        this.isOpen = !this.isOpen
     }
 }
