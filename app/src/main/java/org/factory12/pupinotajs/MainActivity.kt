@@ -123,7 +123,8 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_clear -> {
-                this.editText?.text?.clear()
+                if (this.isOpen) this.animateFab(true)
+                else this.editText?.text?.clear()
                 true
             }
             R.id.action_settings -> {
@@ -137,16 +138,17 @@ class MainActivity : AppCompatActivity() {
 
     private var prev: String? = null
 
-    private fun animateFab() {
+    private fun animateFab(clear : Boolean = false) {
         if (this.isOpen) {
             this.binding.fab.startAnimation(this.animClockwise)
             this.transitionDrawable?.reverseTransition(1000)
-            this.editText?.setText(prev)
+
+            if (clear) this.editText?.text?.clear()
+            else this.editText?.setText(prev)
 
             this.editText?.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE;
             this.editText?.keyListener = this.kl;
-            this.editText?.setSelection(this.editText!!.length())
-
+            if (!clear) this.editText?.setSelection(this.editText!!.length())
         } else {
             this.prev = this.editText?.text.toString()
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
