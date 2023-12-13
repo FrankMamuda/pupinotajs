@@ -37,6 +37,7 @@
             android:textSize="20sp"
             android:background="@null"
             android:textStyle="bold"
+            android:textIsSelectable="true"
             android:importantForAutofill="no"
             android:inputType="textMultiLine" />
     </androidx.constraintlayout.widget.ConstraintLayout>

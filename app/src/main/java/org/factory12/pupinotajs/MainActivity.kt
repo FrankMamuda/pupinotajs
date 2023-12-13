@@ -11,9 +11,14 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
+import android.text.InputType
+import android.text.method.KeyListener
+import android.util.Log
 import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.View.OnTouchListener
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -66,13 +71,7 @@ class MainActivity : AppCompatActivity() {
 
        // binding.
         this.editText = this.binding.editText
-        /*this.editText!!.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-            if (this.isOpen) {
-                this.binding.fab.startAnimation(this.animClockwise)
-                this.transitionDrawable?.reverseTransition(1000)
-            }
-        }*/
-
+        
         // UGLY but unfortunately TransitionDrawable does not work with vector drawables
         val makeBitmapDrawable =  fun (drawableId: Int): Drawable {
             val drawable = ContextCompat.getDrawable(this, drawableId)
@@ -137,6 +136,11 @@ class MainActivity : AppCompatActivity() {
             this.binding.fab.startAnimation(this.animClockwise)
             this.transitionDrawable?.reverseTransition(1000)
             this.editText?.setText(prev)
+
+            this.editText?.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+            this.editText?.keyListener = this.kl;
+            this.editText?.setSelection(this.editText!!.length())
+
         } else {
             this.prev = this.editText?.text.toString()
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -148,9 +152,16 @@ class MainActivity : AppCompatActivity() {
             val curr = this.editText?.text.toString()
             val conv = this.translate(curr, cheese, mac)
             this.editText?.setText(conv)
+            //this.editText?.isEnabled = false
+
+            this.editText?.inputType = InputType.TYPE_NULL;
+            this.kl = this.editText?.keyListener;
+            this.editText?.keyListener = null;
         }
         this.isOpen = !this.isOpen
     }
+
+    private var kl: KeyListener? = null
 
     private val vowels = SparseArray<Char>()
     private fun translate(inputBuffer: String, symbol: String, keepMacrons: Boolean): String {
