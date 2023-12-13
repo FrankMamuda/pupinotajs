@@ -3,9 +3,10 @@
     <PreferenceCategory app:title="@string/general_header">
 
         <EditTextPreference
+            app:defaultValue="p"
             app:key="char"
-            app:title="@string/char_title"
-            app:summary="@string/char_summary"/>
+            app:summary="@string/char_summary"
+            app:title="@string/char_title" />
 
         <SwitchPreferenceCompat
             app:key="macron"

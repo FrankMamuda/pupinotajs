@@ -21,6 +21,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.preference.PreferenceManager
 import org.factory12.pupinotajs.databinding.ActivityMainBinding
 import java.util.Locale
 
@@ -54,6 +56,9 @@ class MainActivity : AppCompatActivity() {
         this.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         this.window.statusBarColor = ContextCompat.getColor(this, R.color.bean)
         this.setSupportActionBar(this.binding.toolbar)
+
+        // set dark system icons
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
 
         // setup animations
         this.animClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_cw)
@@ -125,15 +130,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var prev: String? = null
+
     private fun animateFab() {
         if (this.isOpen) {
             this.binding.fab.startAnimation(this.animClockwise)
             this.transitionDrawable?.reverseTransition(1000)
+            this.editText?.setText(prev)
         } else {
+            this.prev = this.editText?.text.toString()
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            val mac =  prefs.getBoolean("macron",false)
+            val cheese =  prefs.getString("char","p") as String
+
             this.binding.fab.startAnimation(this.animCounterClockwise)
             this.transitionDrawable?.startTransition(1000)
             val curr = this.editText?.text.toString()
-            val conv = this.translate(curr, "p", false)
+            val conv = this.translate(curr, cheese, mac)
             this.editText?.setText(conv)
         }
         this.isOpen = !this.isOpen
