@@ -24,10 +24,12 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.preference.PreferenceManager
+import com.google.android.material.snackbar.Snackbar
 import org.factory12.pupinotajs.databinding.ActivityMainBinding
 import java.util.Locale
 
@@ -93,7 +95,11 @@ class MainActivity : AppCompatActivity() {
         this.binding.fab.setImageDrawable(transitionDrawable)
 
         // binding.fab.setImageDrawable(TransitionDrawable(backgrounds))
-        this.binding.fab.setOnClickListener {
+        this.binding.fab.setOnClickListener {view ->
+            if (this.editText?.text.toString().isEmpty() && !this.isOpen) {
+                Snackbar.make(view, "Ievadi taču tekstu!", Snackbar.LENGTH_LONG).show()
+                return@setOnClickListener;
+            }
             this.animateFab()
             val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
