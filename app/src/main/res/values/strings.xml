@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Pupiņotājs</string>
-    <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
+    <string name="action_settings">Uzstādījumi</string>
+    <string name="action_clear">Notīrīt</string>
+    <string name="action_copy">Nokopēt</string>
     <string name="first_fragment_label">Pupiņotājs</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-    <string name="lorem_ipsum">Bean stuff.</string>
     <string name="input_hint">Šeit ievadi tekstu, ko vēlēs pārvērst Pupiņvalodā.\n\nKad gatavs, nospied uz Pupiņas un gaidi brīnumu.</string>
 </resources>
