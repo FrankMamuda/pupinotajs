@@ -4,6 +4,7 @@ package org.factory12.pupinotajs
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -115,7 +116,11 @@ class MainActivity : AppCompatActivity() {
                 this.editText?.text?.clear()
                 true
             }
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                val i = Intent(this@MainActivity, SettingsActivity::class.java)
+                startActivity(i)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

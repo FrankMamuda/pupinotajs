@@ -7,18 +7,9 @@
     <string name="input_hint">Šeit ievadi tekstu, ko vēlēs pārvērst Pupiņvalodā.\n\nKad gatavs, nospied uz Pupiņas un gaidi brīnumu.</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="general_header">Vispārīgi</string>
+    <string name="char_title">Pupiņburts</string>
+    <string name="macron_title">Garumzīme</string>
+    <string name="macron_summary">Saglabāt garumzīmi pupiņzilbē</string>
+    <string name="char_summary">Aizstāj burtu P ar kaut ko citu</string>
 </resources>
