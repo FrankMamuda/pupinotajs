@@ -1,4 +1,4 @@
-package com.example.pupinotajs
+package org.factory12.pupinotajs
 
 
 import android.content.ClipData
@@ -20,7 +20,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.pupinotajs.databinding.ActivityMainBinding
+import org.factory12.pupinotajs.databinding.ActivityMainBinding
 import java.util.Locale
 
 
