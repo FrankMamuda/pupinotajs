@@ -17,11 +17,9 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
-import android.view.translation.Translator
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.text.set
 import com.example.pupinotajs.databinding.ActivityMainBinding
 import java.util.Locale
 
@@ -42,14 +40,14 @@ class MainActivity : AppCompatActivity() {
         this.setContentView(this.binding.root)
 
         // populate vowels
-        this.vowels.put(257, 'a');
-        this.vowels.put(275, 'e');
-        this.vowels.put(299, 'i');
-        this.vowels.put(363, 'u');
-        this.vowels.put(256, 'A');
-        this.vowels.put(274, 'E');
-        this.vowels.put(298, 'I');
-        this.vowels.put(362, 'U');
+        this.vowels.put(257, 'a')
+        this.vowels.put(275, 'e')
+        this.vowels.put(299, 'i')
+        this.vowels.put(363, 'u')
+        this.vowels.put(256, 'A')
+        this.vowels.put(274, 'E')
+        this.vowels.put(298, 'I')
+        this.vowels.put(362, 'U')
 
         // set up status bar
         this.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -129,15 +127,15 @@ class MainActivity : AppCompatActivity() {
         } else {
             this.binding.fab.startAnimation(this.animCounterClockwise)
             this.transitionDrawable?.startTransition(1000)
-            val curr = this.editText?.text.toString();
-            val conv = this.translate(curr, "p", false);
+            val curr = this.editText?.text.toString()
+            val conv = this.translate(curr, "p", false)
             this.editText?.setText(conv)
         }
         this.isOpen = !this.isOpen
     }
 
     private val vowels = SparseArray<Char>()
-    fun translate(inputBuffer: String, symbol: String, keepMacrons: Boolean): String {
+    private fun translate(inputBuffer: String, symbol: String, keepMacrons: Boolean): String {
         var msg: String
 
         val isVowel = fun (ch: Char): Boolean {
@@ -147,19 +145,19 @@ class MainActivity : AppCompatActivity() {
         val stripMacron = fun (ch: Char, keepMacrons: Boolean): Char {
             // determine appropriate char for conversion
             if (this.vowels.indexOfKey(ch.code) >= 0 && !keepMacrons )
-                return this.vowels.get(ch.code);
+                return this.vowels.get(ch.code)
 
-            return ch;
+            return ch
         }
 
-            // retrieve input text and store it in both a local and class buffer
+        // retrieve input text and store it in both a local and class buffer
         msg = inputBuffer
 
         // make sure it is not empty
         if (msg.isEmpty()) return ""
 
         // iterate through the whole message char by char
-        var y: Int = 0
+        var y = 0
         while (y < msg.length) {
 
             // get the current char
