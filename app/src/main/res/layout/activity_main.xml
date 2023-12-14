@@ -26,20 +26,20 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <EditText
+        <org.factory12.pupinotajs.BeanText
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
             android:hint="@string/input_hint"
-            android:textColor="#8BC34A"
+            android:textColor="@color/bean"
             android:textSize="20sp"
             android:background="@null"
             android:textStyle="bold"
             android:textIsSelectable="true"
             android:importantForAutofill="no"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine|textNoSuggestions" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -50,7 +50,7 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
         android:theme="@style/Theme.MaterialComponents"
-        app:backgroundTint="#a50001"
+        app:backgroundTint="@color/red"
         app:tint="@null"
         app:maxImageSize="56dp"
         app:borderWidth="0dp"

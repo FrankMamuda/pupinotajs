@@ -1,18 +1,21 @@
 package org.factory12.pupinotajs
 
 
+import android.animation.ArgbEvaluator
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
-import android.text.InputType
 import android.text.method.KeyListener
 import android.util.SparseArray
 import android.view.Menu
@@ -150,7 +153,6 @@ class MainActivity : AppCompatActivity() {
         if (this.isOpen) {
             this.binding.fab.startAnimation(this.animCounterClockwise)
             this.transitionDrawable?.reverseTransition(400)
-            this.editText?.inputType = this.prevInputType
             this.editText?.keyListener = this.editText?.tag as KeyListener
 
             if (clear) {
@@ -159,6 +161,8 @@ class MainActivity : AppCompatActivity() {
                 this.editText?.setText(prev)
                 this.editText?.setSelection(this.editText!!.length())
             }
+
+            this.animateColor(R.color.bean, R.color.red)
         } else {
             this.prev = this.editText?.text.toString()
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -171,17 +175,28 @@ class MainActivity : AppCompatActivity() {
             val conv = this.translate(curr, cheese, mac)
             this.editText?.setText(conv)
 
-            this.prevInputType = this.editText?.inputType as Int
-            this.editText?.inputType = InputType.TYPE_NULL
             this.editText?.tag = this.editText?.keyListener
             this.editText?.keyListener = null
+
+            this.animateColor(R.color.red, R.color.bean)
         }
         this.isOpen = !this.isOpen
     }
 
-    private var prevInputType: Int = 0
+    private fun animateColor(from: Int, to: Int) {
+        val colorFrom = ContextCompat.getColor(this, from)
+        val colorTo = ContextCompat.getColor(this, to)
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+        colorAnimation.setDuration(250) // milliseconds
+        colorAnimation.addUpdateListener { animator -> this.binding.fab.supportBackgroundTintList = (
+                (ColorStateList.valueOf(animator.animatedValue as Int)))
+        }
+
+        colorAnimation.start()
+    }
 
     private val vowels = SparseArray<Char>()
+
     private fun translate(inputBuffer: String, symbol: String, keepMacrons: Boolean): String {
         var msg: String
 

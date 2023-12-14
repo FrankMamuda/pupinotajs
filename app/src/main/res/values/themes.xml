@@ -4,7 +4,7 @@
         <item name="colorAccent">@color/bean</item>
         <item name="colorPrimary">@color/bean</item>
         <item name="android:textColorSecondary">@color/white</item>
-        <item name="android:textColorHighlight">#999999</item>
+        <item name="android:textColorHighlight">@color/bean</item>
     </style>
 
     <style name="Settings.Theme" parent="Theme.Material3.DayNight">
