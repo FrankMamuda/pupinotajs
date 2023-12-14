@@ -1,8 +1,6 @@
 package org.factory12.pupinotajs
 
-
 import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.ClipData
@@ -20,6 +18,7 @@ import android.text.method.KeyListener
 import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -74,12 +73,16 @@ class MainActivity : AppCompatActivity() {
 
         // setup copy
         this.editText = this.binding.editText
-        this.editText!!.setOnClickListener { view ->
+        this.editText!!.setOnClickListener {
             if (this.isOpen && this.editText!!.text.isNotEmpty()) {
-                Snackbar.make(view, "Pupiņteksts nokopēts!", Snackbar.LENGTH_LONG).show()
+                //Snackbar.make(view, "Pupiņteksts nokopēts!", Snackbar.LENGTH_LONG).show()
                 this.copyToClipboard()
+                this.binding.fab.visibility = View.VISIBLE
             }
         }
+
+        // force replace overflowIcon to always be white
+        this.binding.toolbar.overflowIcon = ContextCompat.getDrawable(this, R.drawable.overflow)
 
         // UGLY but unfortunately TransitionDrawable does not work with vector drawables
         val makeBitmapDrawable =  fun (drawableId: Int): Drawable {
@@ -150,6 +153,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun animateFab(clear : Boolean = false) {
+        this.binding.fab.visibility = View.VISIBLE
+
         if (this.isOpen) {
             this.binding.fab.startAnimation(this.animCounterClockwise)
             this.transitionDrawable?.reverseTransition(400)
@@ -162,6 +167,7 @@ class MainActivity : AppCompatActivity() {
                 this.editText?.setSelection(this.editText!!.length())
             }
 
+            this.editText!!.isCursorVisible = true
             this.animateColor(R.color.bean, R.color.red)
         } else {
             this.prev = this.editText?.text.toString()
@@ -178,6 +184,7 @@ class MainActivity : AppCompatActivity() {
             this.editText?.tag = this.editText?.keyListener
             this.editText?.keyListener = null
 
+            this.editText!!.isCursorVisible = false
             this.animateColor(R.color.red, R.color.bean)
         }
         this.isOpen = !this.isOpen
