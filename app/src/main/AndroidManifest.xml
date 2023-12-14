@@ -11,8 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pupinotajs"
-        android:versionCode="0120"
-        android:versionName="1.2.0"
+        android:versionCode="0121"
+        android:versionName="1.2.1"
         tools:targetApi="34">
         <activity
             android:name="org.factory12.pupinotajs.SettingsActivity"
