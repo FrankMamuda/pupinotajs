@@ -1,6 +1,7 @@
 package org.factory12.pupinotajs
 
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private var transitionDrawable: TransitionDrawable? = null
     private var editText: EditText? = null
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -67,9 +69,15 @@ class MainActivity : AppCompatActivity() {
         this.animClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_cw)
         this.animCounterClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_ccw)
 
-        //
+        // setup copy
         this.editText = this.binding.editText
-        
+        this.editText!!.setOnClickListener { view ->
+            if (this.isOpen && this.editText!!.text.isNotEmpty()) {
+                Snackbar.make(view, "Pupiņteksts nokopēts!", Snackbar.LENGTH_LONG).show()
+                this.copyToClipboard()
+            }
+        }
+
         // UGLY but unfortunately TransitionDrawable does not work with vector drawables
         val makeBitmapDrawable =  fun (drawableId: Int): Drawable {
             val drawable = ContextCompat.getDrawable(this, drawableId)
@@ -94,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         this.binding.fab.setOnClickListener {view ->
             if (this.editText?.text.toString().isEmpty() && !this.isOpen) {
                 Snackbar.make(view, "Ievadi taču tekstu!", Snackbar.LENGTH_LONG).show()
-                return@setOnClickListener;
+                return@setOnClickListener
             }
             this.animateFab()
             val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -113,9 +121,7 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_copy -> {
-                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip: ClipData = ClipData.newPlainText("Pupiņotājs", this.editText?.text)
-                clipboard.setPrimaryClip(clip)
+                this.copyToClipboard()
                 true
             }
             R.id.action_clear -> {
@@ -134,10 +140,16 @@ class MainActivity : AppCompatActivity() {
 
     private var prev: String? = null
 
+    private fun copyToClipboard() {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip: ClipData = ClipData.newPlainText("Pupiņotājs", this.editText?.text)
+        clipboard.setPrimaryClip(clip)
+    }
+
     private fun animateFab(clear : Boolean = false) {
         if (this.isOpen) {
-            this.binding.fab.startAnimation(this.animClockwise)
-            this.transitionDrawable?.reverseTransition(1000)
+            this.binding.fab.startAnimation(this.animCounterClockwise)
+            this.transitionDrawable?.reverseTransition(400)
             this.editText?.inputType = this.prevInputType
             this.editText?.keyListener = this.editText?.tag as KeyListener
 
@@ -153,8 +165,8 @@ class MainActivity : AppCompatActivity() {
             val mac =  prefs.getBoolean("macron",false)
             val cheese =  prefs.getString("char","p") as String
 
-            this.binding.fab.startAnimation(this.animCounterClockwise)
-            this.transitionDrawable?.startTransition(1000)
+            this.binding.fab.startAnimation(this.animClockwise)
+            this.transitionDrawable?.startTransition(400)
             val curr = this.editText?.text.toString()
             val conv = this.translate(curr, cheese, mac)
             this.editText?.setText(conv)
@@ -167,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         this.isOpen = !this.isOpen
     }
 
-    private var prevInputType: Int = 0;
+    private var prevInputType: Int = 0
 
     private val vowels = SparseArray<Char>()
     private fun translate(inputBuffer: String, symbol: String, keepMacrons: Boolean): String {
